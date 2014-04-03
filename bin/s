@@ -1,0 +1,74 @@
+#!/usr/bin/env node
+
+/**
+ * Module dependencies.
+ */
+
+var connect = require('connect');
+var fs = require('fs');
+var gaze = require('gaze');
+var join = require('path').join;
+var livereload = require('connect-livereload');
+var LivereloadServer = require('tiny-lr');
+var myth = require('myth');
+var program = require('commander');
+var resolve = require('path').resolve;
+var url = require('url');
+
+// cli
+program
+  .version(require('../package.json').version)
+  .usage('[options] [dir]')
+  .option('-p, --port <port>', 'specify the port [3000]', Number, 3000)
+  .parse(process.argv);
+
+// path
+var path = resolve(program.args.shift() || '.');
+
+// setup the server
+var server = connect();
+
+// logging
+server.use(connect.logger('dev'));
+
+// livereload
+var lrserver = new LivereloadServer();
+var port = 35729;
+
+lrserver.listen(port);
+
+gaze(path + '/**/*', function () {
+  this.on('all', function (event, filepath) {
+    // sanitize our file path
+    var fp = filepath.replace(/\s/g, '%20');
+    // tell LiveReload what changed
+    lrserver.changed({
+      body: {
+        files: fp
+      }
+    });
+  });
+});
+
+server.use(livereload({ port: port }));
+
+// myth
+server.use(function (req, res, next) {
+  if (!req.url.match(/\.css/)) return next();
+  var file = join(path, url.parse(req.url).pathname);
+  fs.readFile(file, 'utf8', function (err, str) {
+    if (err) return next(err);
+    str = myth(str);
+    res.setHeader('Content-Type', 'text/css');
+    res.setHeader('Content-Length', Buffer.byteLength(str));
+    res.end(str);
+  });
+});
+
+// static files
+server.use(connect.static(path));
+
+// start the server
+server.listen(program.port, function () {
+  console.log('\033[90mserving \033[36m%s\033[90m on port \033[96m%d\033[0m', path, program.port);
+});

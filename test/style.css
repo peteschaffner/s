@@ -1,0 +1,8 @@
+:root {
+  var-green: green;
+}
+
+body {
+  background: var(green);
+  box-sizing: border-box;
+}
