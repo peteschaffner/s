@@ -8,8 +8,8 @@ var connect = require('connect');
 var fs = require('fs');
 var gaze = require('gaze');
 var join = require('path').join;
-var livereload = require('connect-livereload');
-var LivereloadServer = require('tiny-lr');
+var lrscript = require('connect-livereload');
+var tinylr = require('tiny-lr');
 var myth = require('myth');
 var program = require('commander');
 var resolve = require('path').resolve;
@@ -31,26 +31,16 @@ var server = connect();
 // logging
 server.use(connect.logger('dev'));
 
-// livereload
-var lrserver = new LivereloadServer();
-var port = 35729;
-
-lrserver.listen(port);
-
+// watch files
 gaze(path + '/**/*', function () {
-  this.on('all', function (event, filepath) {
-    // sanitize our file path
-    var fp = filepath.replace(/\s/g, '%20');
+  this.on('all', function (event, file) {
     // tell LiveReload what changed
-    lrserver.changed({
-      body: {
-        files: fp
-      }
-    });
+    tinylr.changed(file);
   });
 });
 
-server.use(livereload({ port: port }));
+// inject livereload.js
+server.use(lrscript({ port: program.port }));
 
 // myth
 server.use(function (req, res, next) {
@@ -67,6 +57,9 @@ server.use(function (req, res, next) {
 
 // static files
 server.use(connect.static(path));
+
+// livereload server
+server.use(tinylr.middleware({ app: server }));
 
 // start the server
 server.listen(program.port, function () {
