@@ -1,6 +1,6 @@
 {
   "name": "s",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Simple file server with LiveReload and Myth CSS preprocessor.",
   "author": "Pete Schaffner <pjschaffner@gmail.com>",
   "dependencies": {
