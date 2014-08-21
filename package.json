@@ -4,12 +4,12 @@
   "description": "Simple file server with LiveReload and Myth CSS preprocessor.",
   "author": "Pete Schaffner <pjschaffner@gmail.com>",
   "dependencies": {
-    "commander": "^2.2.0",
-    "connect": "^2.14.3",
-    "connect-livereload": "^0.3.2",
-    "gaze": "^0.5.1",
-    "myth": "^0.3.4",
-    "tiny-lr": "0.0.5"
+    "commander": "^2.3.0",
+    "connect": "^2.25.7",
+    "connect-livereload": "^0.4.0",
+    "gaze": "^0.6.4",
+    "myth": "^1.1.1",
+    "tiny-lr": "^0.1.0"
   },
   "bin": {
     "s": "./bin/s"

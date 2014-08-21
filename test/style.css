@@ -1,8 +1,8 @@
 :root {
-  var-green: green;
+  --green: green;
 }
 
 body {
-  background: var(green);
+  background: var(--green);
   box-sizing: border-box;
 }
