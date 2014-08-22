@@ -20,6 +20,7 @@ program
   .version(require('../package.json').version)
   .usage('[options] [dir]')
   .option('-p, --port <port>', 'specify the port [3000]', Number, 3000)
+  .option('-L, --no-logs', 'disable request logging')
   .parse(process.argv);
 
 // path
@@ -29,7 +30,7 @@ var path = resolve(program.args.shift() || '.');
 var server = connect();
 
 // logging
-server.use(connect.logger('dev'));
+if (program.logs) server.use(connect.logger('dev'));
 
 // watch files
 gaze(path + '/**/*', function () {
